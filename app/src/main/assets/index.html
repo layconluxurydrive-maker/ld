@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0b0e" />
+  <title>Ink Blade</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icons/icon-192.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <div id="app-shell">
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Main Title Screen (over live animated Canvas sparring loop) -->
+    <section id="title-screen" class="title-screen">
+      <div class="title-topbar">
+        <span id="offline-badge" class="offline-pill">OFFLINE READY</span>
+        <div class="title-icon-bar">
+          <button id="title-btn-mute" class="hud-btn" type="button">SFX ON</button>
+          <button id="title-btn-touch" class="hud-btn" type="button">PAD AUTO</button>
+          <button id="title-btn-settings" class="hud-btn" type="button">SETTINGS</button>
+        </div>
+      </div>
+
+      <div class="title-center">
+        <div class="title-kicker">5 ACTS • 50 STAGES • 7 WEAPONS</div>
+        <h1 class="title-logo">INK BLADE</h1>
+        <p class="title-tagline">Precision Parries. Flowing Steel. Ragdoll Knockouts.</p>
+
+        <div class="title-actions">
+          <button id="title-btn-continue" class="btn btn-primary btn-hero" type="button">
+            CONTINUE CAMPAIGN <span id="title-continue-sub">ACT 1 • LV 1</span>
+          </button>
+          <div class="title-grid-btns">
+            <button id="title-btn-levels" class="btn btn-secondary" type="button">
+              LEVEL SELECT <span id="title-stars-badge" class="pill-tag">0 / 150 ★</span>
+            </button>
+            <button id="title-btn-store" class="btn btn-secondary" type="button">
+              STORE &amp; LOADOUT <span id="title-wallet-badge" class="pill-tag">120c • 6g</span>
+            </button>
+            <button id="title-btn-endless" class="btn btn-secondary" type="button">
+              ENDLESS MODE <span id="title-endless-badge" class="pill-tag">LOCKED (LV 50)</span>
+            </button>
+            <button id="title-btn-challenges" class="btn btn-secondary" type="button">
+              CHALLENGES <span id="title-chal-badge" class="pill-tag">0/6</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Uncluttered Combat Top HUD -->
+    <header id="top-hud" class="hidden">
+      <div class="hud-left">
+        <div class="bar-group">
+          <div class="bar-label-row">
+            <span class="label-title">INK HP</span>
+            <span id="hud-hp-text" class="label-value">120/120</span>
+          </div>
+          <div class="bar-track hp-track">
+            <div id="hud-hp-fill" class="bar-fill hp-fill"></div>
+          </div>
+        </div>
+        <div class="guard-row">
+          <div class="bar-track guard-track">
+            <div id="hud-guard-fill" class="bar-fill guard-fill"></div>
+          </div>
+          <span class="mini-tag">GUARD</span>
+        </div>
+        <div id="hud-buffs" class="hud-buffs"></div>
+      </div>
+
+      <div class="hud-center">
+        <div id="hud-level-tag" class="level-badge">ACT 1 • LV 1</div>
+        <div id="hud-act-name" class="act-title">Crimson Dojo</div>
+        <div id="hud-wave-tag" class="wave-sub">WAVE 1/1 • 1 FOE</div>
+
+        <!-- Boss HP Bar with Phase Markers -->
+        <div id="hud-boss-wrap" class="boss-wrap hidden">
+          <div id="hud-boss-name" class="boss-name">SENSEI KURO</div>
+          <div class="boss-track">
+            <div id="hud-boss-fill" class="boss-fill"></div>
+            <div id="boss-markers" class="boss-markers"></div>
+          </div>
+        </div>
+
+        <!-- Dynamic Combo Counter -->
+        <div id="hud-combo-box" class="combo-box hidden">
+          <span id="hud-combo-num" class="combo-num">5x</span>
+          <span class="combo-label">COMBO</span>
+        </div>
+      </div>
+
+      <div class="hud-right">
+        <div class="currency-row">
+          <span class="curr-pill coin"><i class="dot coin-dot"></i><b id="hud-coins">120</b></span>
+          <span class="curr-pill gem"><i class="dot gem-dot"></i><b id="hud-gems">6</b></span>
+        </div>
+        <div class="sp-hud-group">
+          <div class="bar-track sp-track">
+            <div id="hud-sp-fill" class="bar-fill sp-fill"></div>
+          </div>
+          <span class="mini-tag">SP <em id="hud-sp-ready" class="sp-ready hidden">[I/E]</em></span>
+        </div>
+        <div class="hud-actions">
+          <button id="btn-open-levels" class="hud-btn" type="button">LVLS</button>
+          <button id="btn-open-store" class="hud-btn accent" type="button">STORE</button>
+          <button id="btn-pause" class="hud-btn" type="button">||</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Brief Wave Announcement -->
+    <div id="wave-banner" class="wave-banner"></div>
+
+    <!-- Subtle Desktop Control Hints -->
+    <div id="desktop-hints" class="desktop-hints hidden">
+      <span><b>A/D</b> Move</span>
+      <span><b>W/Space</b> Jump</span>
+      <span><b>S+Space</b> Drop</span>
+      <span><b>J / L-Click</b> Light</span>
+      <span><b>K / R-Click</b> Heavy</span>
+      <span><b>L / S</b> Parry/Block</span>
+      <span><b>Shift / C</b> Dash</span>
+      <span><b>I / E</b> Special</span>
+    </div>
+
+    <!-- Mobile Multi-Touch Controls -->
+    <div id="touch-controls" class="touch-controls hidden">
+      <div class="touch-left">
+        <button class="t-btn t-move" data-action="left" type="button" aria-label="Move Left">&#9664;</button>
+        <button class="t-btn t-move t-jump-left" data-action="jump" type="button" aria-label="Jump">&#9650;</button>
+        <button class="t-btn t-move" data-action="right" type="button" aria-label="Move Right">&#9654;</button>
+      </div>
+      <div class="touch-right">
+        <div class="touch-row">
+          <button id="touch-sp-btn" class="t-btn t-sp" data-action="special" type="button" disabled>SP</button>
+          <button class="t-btn t-dash" data-action="dash" type="button">DASH</button>
+        </div>
+        <div class="touch-row">
+          <button class="t-btn t-blk" data-action="block" type="button">BLK</button>
+          <button class="t-btn t-hvy" data-action="heavy" type="button">HVY</button>
+          <button class="t-btn t-atk" data-action="light" type="button">ATK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Feedback -->
+    <div id="toast-msg" class="toast-msg"></div>
+
+    <!-- Modals Backdrop -->
+    <div id="modal-backdrop" class="modal-backdrop hidden">
+      <!-- Store & Loadout Screen (Two-panel with Live Animated Stickman Preview) -->
+      <section id="store-modal" class="modal-panel store-wide hidden">
+        <div class="modal-header">
+          <div>
+            <h2>STORE &amp; LOADOUT</h2>
+            <p class="modal-sub">Coins: <b id="store-coins">0</b> • Gems: <b id="store-gems">0</b></p>
+          </div>
+          <button id="btn-store-back" class="close-btn accent-close" type="button">PLAY / BACK TO ARENA</button>
+        </div>
+        <div class="store-layout">
+          <aside class="preview-pane">
+            <canvas id="preview-canvas" width="240" height="210"></canvas>
+            <div id="preview-caption" class="preview-caption">Bare Fists • Crimson Ink</div>
+            <div class="loadout-strip">
+              <div class="loadout-title">PRE-MATCH SLOTS (2)</div>
+              <div id="preview-slots" class="slot-row"></div>
+            </div>
+          </aside>
+          <div class="store-main">
+            <div class="modal-tabs">
+              <button class="tab-btn active" data-store-tab="weapons" type="button">Weapons</button>
+              <button class="tab-btn" data-store-tab="stats" type="button">Upgrades</button>
+              <button class="tab-btn" data-store-tab="consumables" type="button">Power-Ups</button>
+              <button class="tab-btn" data-store-tab="cosmetics" type="button">Cosmetics</button>
+            </div>
+            <div id="store-content" class="modal-scroll"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 50-Level Select Screen -->
+      <section id="levels-modal" class="modal-panel store-wide hidden">
+        <div class="modal-header">
+          <div class="levels-head-left">
+            <button id="btn-levels-title" class="close-btn" type="button">&#9664; TITLE</button>
+            <div>
+              <h2>50-LEVEL CAMPAIGN</h2>
+              <p class="modal-sub">Total Stars: <b id="levels-total-stars">0 / 150 ★</b> • Coins: <b id="levels-coins">0</b> • Gems: <b id="levels-gems">0</b></p>
+            </div>
+          </div>
+          <button id="btn-levels-store" class="close-btn accent-close" type="button">STORE &amp; LOADOUT</button>
+        </div>
+        <div id="levels-act-tabs" class="modal-tabs"></div>
+        <div id="levels-grid" class="modal-scroll"></div>
+        <div id="stage-preview-footer" class="stage-footer"></div>
+      </section>
+
+      <!-- Milestone Challenges Modal -->
+      <section id="challenges-modal" class="modal-panel hidden">
+        <div class="modal-header">
+          <div>
+            <h2>MILESTONE CHALLENGES</h2>
+            <p class="modal-sub">Complete combat feats to claim Coins &amp; Gems</p>
+          </div>
+          <button class="close-btn" data-close-modal type="button">CLOSE</button>
+        </div>
+        <div id="challenges-content" class="modal-scroll"></div>
+      </section>
+
+      <!-- Settings Modal (Offline Status, Export/Import, Reset, Endless Preview) -->
+      <section id="settings-modal" class="modal-panel compact-modal hidden">
+        <div class="modal-header">
+          <h2>SETTINGS &amp; SAVE DATA</h2>
+          <button class="close-btn" data-close-modal type="button">CLOSE</button>
+        </div>
+        <div class="settings-body">
+          <div class="setting-row">
+            <span>PWA Offline Status</span>
+            <strong id="settings-offline-state">Cached &amp; Ready</strong>
+          </div>
+          <div class="setting-row">
+            <span>Unlock Endless Mode (Testing Preview)</span>
+            <button id="btn-toggle-endless-preview" class="btn btn-secondary" type="button">OFF</button>
+          </div>
+          <div class="stack-actions">
+            <button id="btn-export-save" class="btn btn-secondary" type="button">EXPORT SAVE JSON</button>
+            <button id="btn-import-save" class="btn btn-secondary" type="button">IMPORT SAVE JSON</button>
+            <button id="btn-reset-save" class="btn btn-danger" type="button">RESET ALL PROGRESS</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pause Modal -->
+      <section id="pause-modal" class="modal-panel compact-modal hidden">
+        <h2 class="modal-title">PAUSED</h2>
+        <p id="pause-objective" class="modal-sub"></p>
+        <div id="pause-consumables" class="pause-buffs"></div>
+        <div class="stack-actions">
+          <button id="btn-pause-resume" class="btn btn-primary" type="button">RESUME</button>
+          <button id="btn-pause-restart" class="btn btn-secondary" type="button">RESTART LEVEL</button>
+          <button id="btn-pause-store" class="btn btn-secondary" type="button">STORE &amp; LOADOUT</button>
+          <button id="btn-pause-mute" class="btn btn-secondary" type="button">TOGGLE AUDIO</button>
+          <button id="btn-pause-title" class="btn btn-secondary" type="button">QUIT TO TITLE</button>
+        </div>
+      </section>
+
+      <!-- Victory / Defeat / Endless Summary Modal -->
+      <section id="result-modal" class="modal-panel compact-modal hidden">
+        <h2 id="result-title" class="modal-title">VICTORY</h2>
+        <div id="result-stars" class="result-stars"></div>
+        <p id="result-sub" class="modal-sub"></p>
+        <div id="result-alert" class="result-alert hidden"></div>
+        <div id="result-stats" class="result-stats"></div>
+        <div class="stack-actions">
+          <button id="btn-result-next" class="btn btn-primary" type="button">NEXT LEVEL</button>
+          <button id="btn-result-retry" class="btn btn-secondary" type="button">REPLAY</button>
+          <button id="btn-result-store" class="btn btn-secondary" type="button">STORE &amp; LOADOUT</button>
+          <button id="btn-result-levels" class="btn btn-secondary" type="button">LEVEL SELECT</button>
+          <button id="btn-result-title" class="btn btn-secondary" type="button">QUIT TO TITLE</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

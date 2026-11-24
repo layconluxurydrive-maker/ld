@@ -1,0 +1,6 @@
+{
+  "name": "Ink Blade",
+  "description": "High-contrast 2D stickman fighting game with 50 levels across 5 Acts, 7 weapons, parries, Verlet ragdoll knockouts, and an upgrade store.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
