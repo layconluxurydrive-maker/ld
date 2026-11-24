@@ -4,7 +4,7 @@
   "description": "High-contrast 2D stickman fighting game with 50 levels, 5 Act bosses, 7 weapons, Endless mode, and offline PWA support.",
   "start_url": "./index.html",
   "display": "standalone",
-  "orientation": "any",
+  "orientation": "landscape",
   "background_color": "#0b0b0e",
   "theme_color": "#0b0b0e",
   "icons": [

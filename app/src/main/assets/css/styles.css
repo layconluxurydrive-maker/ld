@@ -986,3 +986,54 @@ body {
     font-size: 9px;
   }
 }
+
+@media (max-height: 500px) {
+  .title-screen {
+    padding: 8px 16px 10px;
+  }
+  .title-logo {
+    font-size: 36px;
+    margin: 2px 0;
+  }
+  .title-tagline {
+    margin: 0 0 10px;
+    font-size: 12px;
+  }
+  .btn-hero {
+    padding: 10px 14px !important;
+  }
+  .title-grid-btns .btn {
+    padding: 7px 10px;
+  }
+  .modal-panel {
+    max-height: 94vh;
+  }
+  .store-layout {
+    grid-template-columns: 205px 1fr;
+  }
+  .preview-pane {
+    padding: 8px;
+    border-right: 1px solid var(--border);
+    border-bottom: none;
+    flex-direction: column;
+  }
+  #preview-canvas {
+    width: 175px;
+  }
+  .level-cards {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .stage-footer {
+    flex-direction: row;
+    align-items: center;
+    padding: 7px 12px;
+  }
+  .t-btn {
+    min-width: 46px;
+    min-height: 44px;
+  }
+  .t-btn.t-move {
+    min-width: 48px;
+    min-height: 48px;
+  }
+}

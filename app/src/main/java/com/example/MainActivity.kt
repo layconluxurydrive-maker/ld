@@ -19,8 +19,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -29,9 +29,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import java.io.ByteArrayInputStream
 import java.io.IOException
 
 private const val GAME_ORIGIN = "https://appassets.local"
@@ -43,6 +47,10 @@ class MainActivity : ComponentActivity() {
       statusBarStyle = SystemBarStyle.dark(AndroidColor.TRANSPARENT),
       navigationBarStyle = SystemBarStyle.dark(AndroidColor.TRANSPARENT),
     )
+    WindowCompat.getInsetsController(window, window.decorView).apply {
+      systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+      hide(WindowInsetsCompat.Type.systemBars())
+    }
     setContent { InkBladeHost() }
   }
 }
@@ -105,7 +113,7 @@ fun InkBladeHost() {
     modifier =
       Modifier.fillMaxSize()
         .background(Color(0xFF0B0B0E))
-        .windowInsetsPadding(WindowInsets.safeDrawing)
+        .windowInsetsPadding(WindowInsets.displayCutout)
   ) {
     AndroidView(factory = { webView }, modifier = Modifier.fillMaxSize())
   }
@@ -128,7 +136,7 @@ private class LocalAssetWebViewClient(private val context: Context) : WebViewCli
       val headers = mapOf("Access-Control-Allow-Origin" to "*")
       WebResourceResponse(mime, "UTF-8", 200, "OK", headers, stream)
     } catch (_: IOException) {
-      WebResourceResponse("text/plain", "UTF-8", 404, "Not Found", emptyMap(), null)
+      WebResourceResponse("text/plain", "UTF-8", 404, "Not Found", emptyMap(), ByteArrayInputStream(ByteArray(0)))
     }
   }
 
